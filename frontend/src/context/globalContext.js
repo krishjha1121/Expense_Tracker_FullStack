@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import axios from "axios";
 
-const BASE_URL = "https://expense-tracker-backend-mf9g.onrender.com"
+const BASE_URL = "http://localhost:5001/api/v1/"; // Replace with your backend URL
 
 const GlobalContext = React.createContext();
 
@@ -107,9 +107,6 @@ export const GlobalProvider = ({ children }) => {
     </GlobalContext.Provider>
 
     )
-    
-    
-
 }
 
 export const useGlobalContext = () => {
