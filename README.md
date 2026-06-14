@@ -2,6 +2,8 @@
 
 A modern, fullstack web application for tracking personal finances. Built with the MERN stack (MongoDB, Express, React, Node.js).
 
+**🌟 Live Demo:** [https://agent-6a2e68a57031f457536a8--sunny-sorbet-9b31a3.netlify.app/](https://agent-6a2e68a57031f457536a8--sunny-sorbet-9b31a3.netlify.app/)
+
 ## 🚀 Features
 
 * **Secure Authentication**: Implemented secure JWT-based authentication and authorization for protected user access and session management.
