@@ -5,8 +5,11 @@ import avatar from '../../img/avatar.png';
 
 import { signout } from '../../utils/Icons';
 import { menuItems } from '../../utils/menuItems';
+import { useGlobalContext } from '../../context/globalContext';
 
 function Navigation({ active, setActive }) {
+    const { user, logout } = useGlobalContext();
+
     return (
         <NavStyled>
             <div className="user-con">
@@ -16,7 +19,7 @@ function Navigation({ active, setActive }) {
                 />
 
                 <div className="text">
-                    <h2>Mike</h2>
+                    <h2>{user?.name || 'User'}</h2>
                     <p>Your Money</p>
                 </div>
             </div>
@@ -41,10 +44,12 @@ function Navigation({ active, setActive }) {
             </ul>
 
             <div className="bottom-nav">
-                <li>
-                    {signout}
-                    <span> Sign Out</span>
-                </li>
+                <ul>
+                    <li onClick={logout}>
+                        {signout}
+                        <span> Sign Out</span>
+                    </li>
+                </ul>
             </div>
         </NavStyled>
     );
