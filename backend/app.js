@@ -7,7 +7,7 @@ import router from './routes/index.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cors());
@@ -18,8 +18,16 @@ app.get('/', (req, res) => {
     res.send('Hello from the server');
 });
 
-await db();
+const startServer = async () => {
+    try {
+        await db();
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}....`);
+        });
+    } catch (error) {
+        console.log('Failed to start server:', error.message);
+        process.exit(1);
+    }
+};
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+startServer();

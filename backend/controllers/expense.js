@@ -3,14 +3,6 @@ import ExpenseSchema from '../models/ExpenseModel.js';
 export const addExpense = async (req, res) => {
     const { title, amount, category, description, date } = req.body;
 
-    const expense = new ExpenseSchema({
-        title,
-        amount,
-        category,
-        description,
-        date
-    });
-
     try {
         // Validations
         if (!title || !category || !description || !date) {
@@ -25,9 +17,16 @@ export const addExpense = async (req, res) => {
             });
         }
 
-        await expense.save();
+        const expense = await ExpenseSchema.create({
+            title,
+            amount,
+            category,
+            description,
+            date,
+            user: req.user
+        });
 
-        res.status(200).json({
+        res.status(201).json({
             message: 'Expense Added'
         });
     } catch (error) {
@@ -37,9 +36,9 @@ export const addExpense = async (req, res) => {
     }
 };
 
-export const getExpense = async (req, res) => {
+export const getExpenses = async (req, res) => {
     try {
-        const expenses = await ExpenseSchema.find().sort({
+        const expenses = await ExpenseSchema.find({ user: req.user }).sort({
             createdAt: -1
         });
 
@@ -51,11 +50,44 @@ export const getExpense = async (req, res) => {
     }
 };
 
+export const updateExpense = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const expense = await ExpenseSchema.findOneAndUpdate(
+            { _id: id, user: req.user },
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!expense) {
+            return res.status(404).json({
+                message: 'Expense not found!'
+            });
+        }
+
+        res.status(200).json(expense);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server Error'
+        });
+    }
+};
+
 export const deleteExpense = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await ExpenseSchema.findByIdAndDelete(id);
+        const expense = await ExpenseSchema.findOneAndDelete({
+            _id: id,
+            user: req.user
+        });
+
+        if (!expense) {
+            return res.status(404).json({
+                message: 'Expense not found!'
+            });
+        }
 
         res.status(200).json({
             message: 'Expense Deleted'

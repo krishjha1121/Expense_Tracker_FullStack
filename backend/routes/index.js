@@ -2,23 +2,37 @@ import { Router } from 'express';
 import {
     addIncome,
     getIncomes,
+    updateIncome,
     deleteIncome
 } from '../controllers/income.js';
 
 import {
     addExpense,
-    getExpense,
+    getExpenses,
+    updateExpense,
     deleteExpense
 } from '../controllers/expense.js';
 
+import { register, login, getUser } from '../controllers/auth.js';
+import authMiddleware from '../middleware/auth.js';
+
 const router = Router();
 
-router.post('/add-income', addIncome);
-router.get('/get-incomes', getIncomes);
-router.delete('/delete-income/:id', deleteIncome);
+// Auth routes (public)
+router.post('/auth/register', register);
+router.post('/auth/login', login);
+router.get('/auth/user', authMiddleware, getUser);
 
-router.post('/add-expense', addExpense);
-router.get('/get-expenses', getExpense);
-router.delete('/delete-expense/:id', deleteExpense);
+// Income routes (protected)
+router.get('/incomes', authMiddleware, getIncomes);
+router.post('/incomes', authMiddleware, addIncome);
+router.put('/incomes/:id', authMiddleware, updateIncome);
+router.delete('/incomes/:id', authMiddleware, deleteIncome);
+
+// Expense routes (protected)
+router.get('/expenses', authMiddleware, getExpenses);
+router.post('/expenses', authMiddleware, addExpense);
+router.put('/expenses/:id', authMiddleware, updateExpense);
+router.delete('/expenses/:id', authMiddleware, deleteExpense);
 
 export default router;

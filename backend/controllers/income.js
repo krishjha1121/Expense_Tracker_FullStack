@@ -3,14 +3,6 @@ import IncomeSchema from '../models/IncomeModel.js';
 export const addIncome = async (req, res) => {
     const { title, amount, category, description, date } = req.body;
 
-    const income = new IncomeSchema({
-        title,
-        amount,
-        category,
-        description,
-        date
-    });
-
     try {
         // Validations
         if (!title || !category || !description || !date) {
@@ -25,9 +17,16 @@ export const addIncome = async (req, res) => {
             });
         }
 
-        await income.save();
+        const income = await IncomeSchema.create({
+            title,
+            amount,
+            category,
+            description,
+            date,
+            user: req.user
+        });
 
-        res.status(200).json({
+        res.status(201).json({
             message: 'Income Added'
         });
     } catch (error) {
@@ -35,13 +34,11 @@ export const addIncome = async (req, res) => {
             message: 'Server Error'
         });
     }
-
-    console.log(income);
 };
 
 export const getIncomes = async (req, res) => {
     try {
-        const incomes = await IncomeSchema.find().sort({
+        const incomes = await IncomeSchema.find({ user: req.user }).sort({
             createdAt: -1
         });
 
@@ -53,11 +50,44 @@ export const getIncomes = async (req, res) => {
     }
 };
 
+export const updateIncome = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const income = await IncomeSchema.findOneAndUpdate(
+            { _id: id, user: req.user },
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!income) {
+            return res.status(404).json({
+                message: 'Income not found!'
+            });
+        }
+
+        res.status(200).json(income);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server Error'
+        });
+    }
+};
+
 export const deleteIncome = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await IncomeSchema.findByIdAndDelete(id);
+        const income = await IncomeSchema.findOneAndDelete({
+            _id: id,
+            user: req.user
+        });
+
+        if (!income) {
+            return res.status(404).json({
+                message: 'Income not found!'
+            });
+        }
 
         res.status(200).json({
             message: 'Income Deleted'
@@ -68,4 +98,3 @@ export const deleteIncome = async (req, res) => {
         });
     }
 };
-
